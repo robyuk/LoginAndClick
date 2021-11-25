@@ -8,8 +8,9 @@ pwfield='id_password'
 loginname='automated'
 password='automatedautomated'
 clickme='/html/body/nav/div/a'
+id='displaytimer'
 
-def getwebpage(rywebpath):
+def chromedriver():
   #Set options to make web browsing easier
   options=webdriver.ChromeOptions()
   options.add_argument('disable-infobars')
@@ -27,14 +28,21 @@ def gettemp(text):
   temp=float(text.split(": ")[1])
   return temp
 
-def main(rywebpage,loginfield,loginname,pwfield,password,clickme):
-  """ Logs in to a web page and clicks a link """
-  driver=getwebpage(rywebpage)
+def pagelogin(rywebpage,loginfield,loginname,pwfield,password):
+  """ Logs in to a web page """
+  driver=chromedriver()
   driver.get(rywebpage)
   driver.find_element(by='id', value=loginfield).send_keys(loginname)
+  time.sleep(2)
   driver.find_element(by='id', value=pwfield).send_keys(password+Keys.RETURN)
-  driver.find_element(by='xpath', value=clickme).click
   time.sleep(2)
   return driver
 
-print(main(rywebpage,loginfield,loginname,pwfield,password,clickme).current_url)
+def main(rywebpage,loginfield,loginname,pwfield,password,clickme,id):
+  """Log into a webpage, click a link, and scrape a value"""
+  driver=pagelogin(rywebpage,loginfield,loginname,pwfield,password)
+  driver.find_element(by='xpath', value=clickme).click
+  element=driver.find_element(by='id', value=id)
+  return element
+
+print(gettemp(main(rywebpage,loginfield,loginname,pwfield,password,clickme,id).text))
