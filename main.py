@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import time
+from datetime import datetime as dt
 
 rywebpage='http://automated.pythonanywhere.com/login/'
 loginfield='id_username'
@@ -9,6 +10,7 @@ loginname='automated'
 password='automatedautomated'
 clickme='/html/body/nav/div/a'
 id='displaytimer'
+filename='temp.txt'
 
 def chromedriver():
   #Set options to make web browsing easier
@@ -39,10 +41,18 @@ def pagelogin(rywebpage,loginfield,loginname,pwfield,password):
   return driver
 
 def main(rywebpage,loginfield,loginname,pwfield,password,clickme,id):
-  """Log into a webpage, click a link, and scrape a value"""
+  """Log into a webpage, click a link, and scrape a value to a file"""
   driver=pagelogin(rywebpage,loginfield,loginname,pwfield,password)
   driver.find_element(by='xpath', value=clickme).click
-  element=driver.find_element(by='id', value=id)
+
+  while True:
+    with open(filename,'a') as file:
+      timestamp=str(dt.now())
+      element=driver.find_element(by='id', value=id)
+      file.write(f'{timestamp.split(".")[0]} : {gettemp(element.text)}\n')
+    time.sleep(2)
+
   return element
+
 
 print(gettemp(main(rywebpage,loginfield,loginname,pwfield,password,clickme,id).text))
